@@ -1,0 +1,1 @@
+We believe in your right to privacy. Unlike other online PDF tools, this website processes all your files directly on your computer. No data is ever sent to or stored on our servers. You can even disconnect from the internet after the page loads and continue to use all the tools. Your files remain yours, always
