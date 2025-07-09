@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-In-One PDF Toolkit - Free, Private, Offline</title>
+    <meta name="description" content="The ultimate free, private, and offline PDF toolkit. Merge, split, edit, convert, and organize your PDF files securely in your browser. No uploads required.">
+    <meta name="keywords" content="PDF tools, merge PDF, split PDF, edit PDF, convert PDF, PDF to JPG, image to PDF, free PDF editor, offline PDF, secure PDF">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+
+    <!-- Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #007A7A;
+            --primary-hover: #005f5f;
+            --background-light: #F8F9FA;
+            --background-dark: #121a27;
+            --card-light: #FFFFFF;
+            --card-dark: #1e293b;
+            --text-light: #334155;
+            --text-dark: #E2E8F0;
+            --heading-light: #1E293B;
+            --heading-dark: #F8F9FA;
+            --border-light: #E2E8F0;
+            --border-dark: #334155;
+            --shadow-color: rgba(50, 50, 93, 0.1);
+            --transition-speed: 0.3s;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        [data-bs-theme="light"] {
+            background-color: var(--background-light);
+            color: var(--text-light);
+        }
+
+        [data-bs-theme="dark"] {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+
+        .header {
+            padding: 1.5rem 0;
+            text-align: center;
+            border-bottom: 1px solid;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            transition: background-color var(--transition-speed);
+        }
+        [data-bs-theme="light"] .header { border-color: var(--border-light); background-color: rgba(255,255,255,0.8); backdrop-filter: blur(10px); }
+        [data-bs-theme="dark"] .header { border-color: var(--border-dark); background-color: rgba(18, 26, 39, 0.8); backdrop-filter: blur(10px); }
+
+        .header h1 {
+            font-weight: 700;
+            font-size: 1.75rem;
+            margin: 0;
+        }
+        [data-bs-theme="light"] .header h1 a { color: var(--heading-light); }
+        [data-bs-theme="dark"] .header h1 a { color: var(--heading-dark); }
+        .header h1 i { color: var(--primary-color); }
+
+        .hero-section {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        .hero-section h2 {
+            font-weight: 700;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        .hero-section .lead {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.2rem;
+        }
+        .hero-section .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem 2rem;
+            margin-top: 2rem;
+        }
+        .hero-section .feature i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .tool-category {
+            margin-bottom: 3.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .tool-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.75rem;
+        }
+
+        .tool-card {
+            flex: 0 1 260px;
+            border-radius: 16px;
+            padding: 1.75rem;
+            text-align: center;
+            transition: all var(--transition-speed) ease;
+            cursor: pointer;
+            border: 1px solid;
+        }
+        [data-bs-theme="light"] .tool-card {
+            background-color: var(--card-light);
+            border-color: var(--border-light);
+            box-shadow: 0 4px 6px -1px var(--shadow-color);
+        }
+        [data-bs-theme="dark"] .tool-card {
+            background-color: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-color);
+            [data-bs-theme="light"] & { box-shadow: 0 10px 15px -3px var(--shadow-color); }
+        }
+
+        .tool-card .icon { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1.25rem; }
+        .tool-card h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+        [data-bs-theme="light"] .tool-card h3 { color: var(--heading-light); }
+        [data-bs-theme="dark"] .tool-card h3 { color: var(--heading-dark); }
+        .tool-card p { font-size: 0.9rem; line-height: 1.5; }
+
+        .privacy-section {
+            padding: 4rem 0;
+            text-align: center;
+        }
+        [data-bs-theme="light"] .privacy-section { background-color: #eaf3f3; }
+        [data-bs-theme="dark"] .privacy-section { background-color: #1e293b; }
+
+        .footer {
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 2rem;
+            border-top: 1px solid;
+        }
+        [data-bs-theme="light"] .footer { background-color: #E2E8F0; border-color: var(--border-light); }
+        [data-bs-theme="dark"] .footer { background-color: #121a27; border-color: var(--border-dark); }
+        .social-icons a { font-size: 1.5rem; margin: 0 0.75rem; color: var(--text-light); transition: color var(--transition-speed); }
+        [data-bs-theme="dark"] .social-icons a { color: var(--text-dark); }
+        .social-icons a:hover { color: var(--primary-color); }
+
+        .theme-switch { position: fixed; bottom: 20px; right: 20px; z-index: 1050; }
+
+        /* Modal Styles */
+        .modal-content { border-radius: 16px; border: none; }
+        [data-bs-theme="dark"] .modal-content { background-color: var(--card-dark); }
+        .modal-header { border-bottom: 1px solid; }
+        [data-bs-theme="light"] .modal-header { border-color: var(--border-light); }
+        [data-bs-theme="dark"] .modal-header { border-color: var(--border-dark); }
+        .modal-title { font-weight: 600; }
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+        #modal-error-alert { display: none; }
+
+        /* Page Organizer Styles */
+        #page-organizer { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; max-height: 50vh; overflow-y: auto; padding: 1rem; border-radius: 8px; }
+        [data-bs-theme="light"] #page-organizer { background-color: var(--background-light); }
+        [data-bs-theme="dark"] #page-organizer { background-color: #111827; }
+        .page-thumbnail { position: relative; border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: grab; transition: border-color var(--transition-speed); }
+        .page-thumbnail.selected { border-color: var(--primary-color); }
+        .page-thumbnail canvas { width: 100%; height: auto; display: block; }
+        .page-number { position: absolute; bottom: 5px; right: 5px; background-color: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
+        .page-actions { position: absolute; top: 5px; right: 5px; display: flex; gap: 5px; }
+        .page-actions button { background-color: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 0.7rem; line-height: 1; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1><a href="#" class="text-decoration-none"><i class="fas fa-file-alt"></i> All-In-One PDF</a></h1>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="container">
+            <h2>The Ultimate PDF Toolkit</h2>
+            <p class="lead">Merge, split, edit, convert, and organize your PDF files for free. All processing is done securely in your browser—your files never leave your computer.</p>
+            <a href="#tools" class="btn btn-primary btn-lg">View All Tools</a>
+            <div class="features">
+                <span class="feature"><i class="fas fa-shield-alt"></i> 100% Private</span>
+                <span class="feature"><i class="fas fa-bolt"></i> Fast Processing</span>
+                <span class="feature"><i class="fas fa-cloud-slash"></i> Works Offline</span>
+            </div>
+        </div>
+    </section>
+
+    <main class="container main-content" id="tools">
+        <!-- Tool sections will be dynamically generated here -->
+    </main>
+
+    <section class="privacy-section">
+        <div class="container">
+            <h2 class="section-title">Privacy First</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <p class="lead">We believe in your right to privacy. Unlike other online PDF tools, this website processes all your files directly on your computer. No data is ever sent to or stored on our servers. You can even disconnect from the internet after the page loads and continue to use all the tools. Your files remain yours, always.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="social-icons mb-3">
+                <a href="https://twitter.com/intent/tweet?" data-original-href="https://twitter.com/intent/tweet?" target="_blank" title="Share on Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=" data-original-href="https://www.facebook.com/sharer/sharer.php?u=" target="_blank" title="Share on Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url=" data-original-href="https://www.linkedin.com/shareArticle?mini=true&url=" target="_blank" title="Share on LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p>Programmed by <strong>Asad Ahsan</strong></p>
+            <p>Contact: <strong>+92-3205623435</strong></p>
+            <p class="mt-2"><small>&copy; 2025 All Rights Reserved</small></p>
+        </div>
+    </footer>
+
+    <!-- Universal Modal -->
+    <div class="modal fade" id="toolModal" tabindex="-1" aria-labelledby="toolModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="toolModalLabel">PDF Tool</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="modal-error-alert"></div>
+                    <div id="toolModalBody"></div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" id="reset-tool-btn">Reset</button>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="run-tool-btn">Run Tool</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Switch Button -->
+    <button class="btn btn-primary theme-switch" id="theme-switch-btn" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // --- CONSTANTS & CONFIGURATION ---
+        const { PDFDocument, rgb, StandardFonts, degrees, PageSizes } = PDFLib;
+        const singleFileInput = `
+            <div class="mb-3">
+                <label for="file-input" class="form-label">Select a PDF file:</label>
+                <input type="file" class="form-control" id="file-input" accept=".pdf" required>
+            </div>`;
+        const multipleFileInput = `
+            <div class="mb-3">
+                <label for="files-input" class="form-label">Select multiple PDF files:</label>
+                <input type="file" class="form-control" id="files-input" multiple accept=".pdf" required>
+            </div>`;
+        const outputFilenameInput = (value) => `
+            <div class="mb-3 mt-3">
+                <label for="output-filename" class="form-label">Output Filename:</label>
+                <input type="text" class="form-control" id="output-filename" value="${value}">
+            </div>`;
+
+        const ALL_TOOLS = {
+            'edit': {
+                title: 'Edit PDF (Add Text/Image)',
+                icon: 'fas fa-pencil-alt',
+                description: 'Add new text and images to your PDF document.',
+                formHTML: `
+                    ${singleFileInput}
+                    <div class="alert alert-warning small">This tool can only ADD new elements. It cannot edit existing content.</div>
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <button class="nav-link active" id="nav-add-text-tab" data-bs-toggle="tab" data-bs-target="#nav-add-text" type="button" role="tab">Add Text</button>
+                            <button class="nav-link" id="nav-add-image-tab" data-bs-toggle="tab" data-bs-target="#nav-add-image" type="button" role="tab">Add Image</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content p-3 border border-top-0 rounded-bottom" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-add-text" role="tabpanel">
+                            <div class="mb-3"><label for="text-input" class="form-label">Text:</label><input type="text" class="form-control" id="text-input" placeholder="Enter text to add"></div>
+                            <div class="row g-3">
+                                <div class="col-md-4"><label for="text-page" class="form-label">Page Number:</label><input type="number" class="form-control" id="text-page" value="1" min="1"></div>
+                                <div class="col-md-4"><label for="text-x" class="form-label">X (from left):</label><input type="number" class="form-control" id="text-x" value="50"></div>
+                                <div class="col-md-4"><label for="text-y" class="form-label">Y (from bottom):</label><input type="number" class="form-control" id="text-y" value="50"></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-add-image" role="tabpanel">
+                            <div class="mb-3"><label for="image-input" class="form-label">Select an image (JPG/PNG):</label><input type="file" class="form-control" id="image-input" accept="image/jpeg, image/png"></div>
+                             <div class="row g-3">
+                                <div class="col-md-4"><label for="image-page" class="form-label">Page Number:</label><input type="number" class="form-control" id="image-page" value="1" min="1"></div>
+                                <div class="col-md-4"><label for="image-x" class="form-label">X (from left):</label><input type="number" class="form-control" id="image-x" value="50"></div>
+                                <div class="col-md-4"><label for="image-y" class="form-label">Y (from bottom):</label><input type="number" class="form-control" id="image-y" value="50"></div>
+                            </div>
+                        </div>
+                    </div>
+                    ${outputFilenameInput('edited.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    if (!file) throw new Error('Please select a PDF file.');
+                    const editFileBytes = await file.arrayBuffer();
+                    const editPdf = await PDFDocument.load(editFileBytes, { ignoreEncryption: true });
+                    const textToAdd = document.getElementById('text-input').value;
+                    const imageToAdd = document.getElementById('image-input').files[0];
+
+                    if (!textToAdd && !imageToAdd) throw new Error('Please enter text or select an image to add.');
+
+                    if (textToAdd) {
+                        const pageNum = parseInt(document.getElementById('text-page').value) - 1;
+                        if (pageNum >= editPdf.getPageCount() || pageNum < 0) throw new Error('Invalid page number for text.');
+                        const x = parseInt(document.getElementById('text-x').value);
+                        const y = parseInt(document.getElementById('text-y').value);
+                        const page = editPdf.getPages()[pageNum];
+                        page.drawText(textToAdd, { x, y, font: await editPdf.embedFont(StandardFonts.Helvetica), size: 24, color: rgb(0, 0, 0) });
+                    }
+
+                    if (imageToAdd) {
+                        const pageNum = parseInt(document.getElementById('image-page').value) - 1;
+                        if (pageNum >= editPdf.getPageCount() || pageNum < 0) throw new Error('Invalid page number for image.');
+                        const x = parseInt(document.getElementById('image-x').value);
+                        const y = parseInt(document.getElementById('image-y').value);
+                        const imgBytes = await imageToAdd.arrayBuffer();
+                        const image = imageToAdd.type === 'image/png' ? await editPdf.embedPng(imgBytes) : await editPdf.embedJpg(imgBytes);
+                        const page = editPdf.getPages()[pageNum];
+                        page.drawImage(image, { x, y, width: image.width / 2, height: image.height / 2 });
+                    }
+
+                    const editedBytes = await editPdf.save();
+                    saveAs(new Blob([editedBytes], { type: 'application/pdf' }), app.getOutputFilename('edited.pdf'));
+                }
+            },
+            'page-numbers': {
+                title: 'Add Page Numbers',
+                icon: 'fas fa-sort-numeric-down',
+                description: 'Insert page numbers easily into your document.',
+                formHTML: `${singleFileInput}${outputFilenameInput('paginated.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const pageNumBytes = await file.arrayBuffer();
+                    const pageNumPdf = await PDFDocument.load(pageNumBytes, { ignoreEncryption: true });
+                    const font = await pageNumPdf.embedFont(StandardFonts.Helvetica);
+                    const pages = pageNumPdf.getPages();
+                    for (let i = 0; i < pages.length; i++) {
+                        const { width, height } = pages[i].getSize();
+                        pages[i].drawText(`${i + 1} / ${pages.length}`, { x: width / 2 - 20, y: 30, size: 12, font, color: rgb(0.5, 0.5, 0.5) });
+                    }
+                    const pageNumBytesSaved = await pageNumPdf.save();
+                    saveAs(new Blob([pageNumBytesSaved], { type: 'application/pdf' }), app.getOutputFilename('paginated.pdf'));
+                }
+            },
+            'watermark': {
+                title: 'Add Watermark',
+                icon: 'fas fa-stamp',
+                description: 'Stamp text or an image over your PDF pages.',
+                formHTML: `${singleFileInput}<div class="mb-3"><label for="text-input" class="form-label">Watermark Text:</label><input type="text" class="form-control" id="text-input" placeholder="e.g., CONFIDENTIAL" required></div>${outputFilenameInput('watermarked.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const text = document.getElementById('text-input').value;
+                    const watermarkBytes = await file.arrayBuffer();
+                    const watermarkPdf = await PDFDocument.load(watermarkBytes, { ignoreEncryption: true });
+                    const watermarkFont = await watermarkPdf.embedFont(StandardFonts.HelveticaBold);
+                    for (const page of watermarkPdf.getPages()) {
+                        const { width, height } = page.getSize();
+                        page.drawText(text, { x: width / 2 - (text.length * 15), y: height / 2, size: 50, font: watermarkFont, color: rgb(0.95, 0.1, 0.1), opacity: 0.4, rotate: degrees(45) });
+                    }
+                    const watermarkBytesSaved = await watermarkPdf.save();
+                    saveAs(new Blob([watermarkBytesSaved], { type: 'application/pdf' }), app.getOutputFilename('watermarked.pdf'));
+                }
+            },
+            'header-footer': {
+                title: 'Header & Footer',
+                icon: 'fas fa-window-maximize',
+                description: 'Add custom text to the top and bottom of pages.',
+                formHTML: `${singleFileInput}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="header-text" class="form-label">Header Text:</label>
+                            <input type="text" id="header-text" class="form-control" placeholder="e.g., My Document">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="footer-text" class="form-label">Footer Text:</label>
+                            <input type="text" id="footer-text" class="form-control" placeholder="e.g., Page %p of %P">
+                             <div class="form-text">Use %p for page number and %P for total pages.</div>
+                        </div>
+                    </div>
+                    ${outputFilenameInput('document-with-hf.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const hfBytes = await file.arrayBuffer();
+                    const hfPdf = await PDFDocument.load(hfBytes, { ignoreEncryption: true });
+                    const hfFont = await hfPdf.embedFont(StandardFonts.Helvetica);
+                    const headerText = document.getElementById('header-text').value;
+                    const footerText = document.getElementById('footer-text').value;
+                    const hfPages = hfPdf.getPages();
+                    for(let i=0; i<hfPages.length; i++) {
+                        const page = hfPages[i];
+                        const { width, height } = page.getSize();
+                        const pageNum = i + 1;
+                        const totalPages = hfPages.length;
+                        const finalHeaderText = headerText.replace('%p', pageNum).replace('%P', totalPages);
+                        const finalFooterText = footerText.replace('%p', pageNum).replace('%P', totalPages);
+
+                        if (headerText) {
+                            page.drawText(finalHeaderText, { x: 50, y: height - 40, size: 10, font: hfFont, color: rgb(0.3, 0.3, 0.3) });
+                        }
+                        if (footerText) {
+                            page.drawText(finalFooterText, { x: 50, y: 40, size: 10, font: hfFont, color: rgb(0.3, 0.3, 0.3) });
+                        }
+                    }
+                    const hfBytesSaved = await hfPdf.save();
+                    saveAs(new Blob([hfBytesSaved], { type: 'application/pdf' }), app.getOutputFilename('document-with-hf.pdf'));
+                }
+            },
+            'bates-numbering': {
+                title: 'Bates Numbering',
+                icon: 'fas fa-gavel',
+                description: 'Add legal-style numbering to documents.',
+                formHTML: `${singleFileInput}
+                    <div class="row g-3">
+                        <div class="col-md-6"><label for="bates-prefix" class="form-label">Prefix:</label><input type="text" class="form-control" id="bates-prefix" value="DOC-"></div>
+                        <div class="col-md-6"><label for="bates-digits" class="form-label">Number of Digits:</label><input type="number" class="form-control" id="bates-digits" value="6" min="1"></div>
+                    </div>
+                    <div class="alert alert-info mt-3 small">Example: DOC-000001</div>
+                    ${outputFilenameInput('bates.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const batesBytes = await file.arrayBuffer();
+                    const batesPdf = await PDFDocument.load(batesBytes, { ignoreEncryption: true });
+                    const prefix = document.getElementById('bates-prefix').value;
+                    const digits = parseInt(document.getElementById('bates-digits').value);
+                    const batesFont = await batesPdf.embedFont(StandardFonts.Helvetica);
+                    const batesPages = batesPdf.getPages();
+                    for(let i=0; i<batesPages.length; i++) {
+                        const page = batesPages[i];
+                        const { width } = page.getSize();
+                        const numberString = (i + 1).toString().padStart(digits, '0');
+                        const batesText = `${prefix}${numberString}`;
+                        const textWidth = batesFont.widthOfTextAtSize(batesText, 12);
+                        page.drawText(batesText, { x: width - textWidth - 40, y: 20, size: 12, font: batesFont, color: rgb(0, 0, 0) });
+                    }
+                    const batesBytesSaved = await batesPdf.save();
+                    saveAs(new Blob([batesBytesSaved], { type: 'application/pdf' }), app.getOutputFilename('bates.pdf'));
+                }
+            },
+            'merge': {
+                title: 'Merge PDF',
+                icon: 'fas fa-compress-arrows-alt',
+                description: 'Combine multiple PDFs into a single document.',
+                formHTML: `${multipleFileInput}${outputFilenameInput('merged.pdf')}`,
+                async execute(app) {
+                    const files = document.getElementById('files-input').files;
+                    const mergedPdf = await PDFDocument.create();
+                    for (const f of files) {
+                        const pdfBytes = await f.arrayBuffer();
+                        const pdf = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
+                        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                        copiedPages.forEach(page => mergedPdf.addPage(page));
+                    }
+                    const mergedBytes = await mergedPdf.save();
+                    saveAs(new Blob([mergedBytes], { type: 'application/pdf' }), app.getOutputFilename('merged.pdf'));
+                }
+            },
+            'organize': {
+                title: 'Organize PDF',
+                icon: 'fas fa-sitemap',
+                description: 'Visually reorder, rotate, or delete pages.',
+                formHTML: `${singleFileInput}
+                    <div id="page-organizer-container" class="d-none">
+                        <p class="text-muted small">Drag and drop pages to reorder. Use buttons to rotate or delete.</p>
+                        <div id="page-organizer"></div>
+                        <div class="mt-3">
+                             <button type="button" class="btn btn-sm btn-outline-danger" id="delete-selected-btn">Delete Selected</button>
+                        </div>
+                    </div>
+                    ${outputFilenameInput('organized.pdf')}`,
+                onModalReady(app) {
+                    document.getElementById('file-input').addEventListener('change', (e) => app.renderPageOrganizer(e.target.files[0]));
+                },
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const organizeBytes = await file.arrayBuffer();
+                    const organizePdf = await PDFDocument.load(organizeBytes, { ignoreEncryption: true });
+                    const newPdfDoc = await PDFDocument.create();
+                    
+                    const pageOrder = app.organizeSortable.toArray().map(item => parseInt(item, 10));
+                    const pagesToKeep = [];
+                    pageOrder.forEach(originalIndex => {
+                        const div = document.querySelector(`[data-original-index='${originalIndex}']`);
+                        if (div) { pagesToKeep.push(originalIndex); }
+                    });
+
+                    if (pagesToKeep.length === 0) throw new Error("Cannot save a PDF with no pages.");
+
+                    const copiedPages = await newPdfDoc.copyPages(organizePdf, pagesToKeep);
+
+                    pagesToKeep.forEach((originalIndex, newIndex) => {
+                        const div = document.querySelector(`[data-original-index='${originalIndex}']`);
+                        const rotation = parseInt(div.dataset.rotation || '0', 10);
+                        if (rotation !== 0) {
+                            copiedPages[newIndex].setRotation(degrees(rotation));
+                        }
+                    });
+
+                    copiedPages.forEach(page => newPdfDoc.addPage(page));
+                    const newPdfBytes = await newPdfDoc.save();
+                    saveAs(new Blob([newPdfBytes], { type: 'application/pdf' }), app.getOutputFilename('organized.pdf'));
+                }
+            },
+            'split': {
+                title: 'Split PDF',
+                icon: 'fas fa-expand-arrows-alt',
+                description: 'Extract pages into one or more separate files.',
+                formHTML: `${singleFileInput}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="split-type" id="split-all" value="all" checked>
+                        <label class="form-check-label" for="split-all">Split all pages into separate files</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="split-type" id="split-every" value="every">
+                        <label class="form-check-label" for="split-every">Split every X pages</label>
+                    </div>
+                    <div class="mb-3 mt-2 d-none" id="split-every-container">
+                         <label for="split-pages" class="form-label">Number of pages per file:</label>
+                         <input type="number" class="form-control" id="split-pages" value="1" min="1">
+                    </div>
+                    ${outputFilenameInput('split.zip')}`,
+                onModalReady() {
+                    document.querySelectorAll('input[name="split-type"]').forEach(radio => {
+                        radio.addEventListener('change', (e) => {
+                            document.getElementById('split-every-container').classList.toggle('d-none', e.target.value !== 'every');
+                        });
+                    });
+                },
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const splitBytes = await file.arrayBuffer();
+                    const splitPdf = await PDFDocument.load(splitBytes, { ignoreEncryption: true });
+                    const zip = new JSZip();
+                    const splitType = document.querySelector('input[name="split-type"]:checked').value;
+
+                    if (splitType === 'all') {
+                        for (let i = 0; i < splitPdf.getPageCount(); i++) {
+                            const newPdf = await PDFDocument.create();
+                            const [copiedPage] = await newPdf.copyPages(splitPdf, [i]);
+                            newPdf.addPage(copiedPage);
+                            const newPdfBytes = await newPdf.save();
+                            zip.file(`page_${i + 1}.pdf`, newPdfBytes);
+                        }
+                    } else {
+                        const pagesPerFile = parseInt(document.getElementById('split-pages').value);
+                        const pageCount = splitPdf.getPageCount();
+                        for (let i = 0; i < pageCount; i += pagesPerFile) {
+                            const newPdf = await PDFDocument.create();
+                            const end = Math.min(i + pagesPerFile, pageCount);
+                            const indices = Array.from({length: end - i}, (_, k) => i + k);
+                            const copiedPages = await newPdf.copyPages(splitPdf, indices);
+                            copiedPages.forEach(p => newPdf.addPage(p));
+                            const newPdfBytes = await newPdf.save();
+                            zip.file(`pages_${i + 1}-${end}.pdf`, newPdfBytes);
+                        }
+                    }
+                    const content = await zip.generateAsync({ type: 'blob' });
+                    saveAs(content, app.getOutputFilename('split.zip'));
+                }
+            },
+            'rotate': {
+                title: 'Rotate PDF',
+                icon: 'fas fa-sync-alt',
+                description: 'Quickly rotate all pages in a document.',
+                formHTML: `${singleFileInput}
+                    <div class="mb-3">
+                        <label for="rotation-angle" class="form-label">Rotation Angle:</label>
+                        <select class="form-select" id="rotation-angle">
+                            <option value="90">90° Clockwise</option>
+                            <option value="180">180°</option>
+                            <option value="270">270° Clockwise</option>
+                        </select>
+                    </div>
+                    ${outputFilenameInput('rotated.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const rotateBytes = await file.arrayBuffer();
+                    const rotatePdf = await PDFDocument.load(rotateBytes, { ignoreEncryption: true });
+                    const angle = parseInt(document.getElementById('rotation-angle').value, 10);
+                    rotatePdf.getPages().forEach(page => page.rotate(degrees(angle)));
+                    const rotatedBytes = await rotatePdf.save();
+                    saveAs(new Blob([rotatedBytes], { type: 'application/pdf' }), app.getOutputFilename('rotated.pdf'));
+                }
+            },
+            'images-to-pdf': {
+                title: 'Images to PDF',
+                icon: 'fas fa-file-image',
+                description: 'Combine JPG or PNG images into a PDF file.',
+                formHTML: `<div class="mb-3"><label for="files-input" class="form-label">Select image files (JPG, PNG):</label><input type="file" class="form-control" id="files-input" multiple accept="image/jpeg, image/png" required></div>${outputFilenameInput('images.pdf')}`,
+                async execute(app) {
+                    const files = document.getElementById('files-input').files;
+                    const imagesPdf = await PDFDocument.create();
+                    for (const imgFile of files) {
+                        const bytes = await imgFile.arrayBuffer();
+                        const image = imgFile.type === 'image/png' ? await imagesPdf.embedPng(bytes) : await imagesPdf.embedJpg(bytes);
+                        const page = imagesPdf.addPage([image.width, image.height]);
+                        page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+                    }
+                    const pdfBytesFromImages = await imagesPdf.save();
+                    saveAs(new Blob([pdfBytesFromImages], { type: 'application/pdf' }), app.getOutputFilename('images.pdf'));
+                }
+            },
+            'pdf-to-images': {
+                title: 'PDF to Images',
+                icon: 'fas fa-images',
+                description: 'Convert each PDF page into a JPG image.',
+                formHTML: `${singleFileInput}<div class="alert alert-info small">This tool will create a ZIP file containing each page as a JPG image.</div>${outputFilenameInput('pdf-images.zip')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const pdfToImageBytes = await file.arrayBuffer();
+                    const pdfToImageDoc = await pdfjsLib.getDocument({data: pdfToImageBytes}).promise;
+                    const imageZip = new JSZip();
+                    for (let i = 1; i <= pdfToImageDoc.numPages; i++) {
+                        const page = await pdfToImageDoc.getPage(i);
+                        const viewport = page.getViewport({ scale: 2.0 });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+                        const imageData = canvas.toDataURL('image/jpeg', 0.9);
+                        imageZip.file(`page_${i}.jpg`, imageData.split(',')[1], { base64: true });
+                    }
+                    const imageZipContent = await imageZip.generateAsync({ type: 'blob' });
+                    saveAs(imageZipContent, app.getOutputFilename('pdf-images.zip'));
+                }
+            },
+            'html-to-pdf': {
+                title: 'HTML to PDF',
+                icon: 'fab fa-html5',
+                description: 'Convert a web page file into a PDF document.',
+                formHTML: `<div class="mb-3"><label for="file-input" class="form-label">Select an HTML file:</label><input type="file" class="form-control" id="file-input" accept=".html,.htm" required></div><div class="alert alert-info small">Complex styles and scripts may not render perfectly.</div>${outputFilenameInput('converted.pdf')}`,
+                async execute(app) {
+                    const htmlFile = document.getElementById('file-input').files[0];
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const content = e.target.result;
+                        html2pdf().from(content).save(app.getOutputFilename('converted.pdf'));
+                    };
+                    reader.readAsText(htmlFile);
+                }
+            },
+            'resize': {
+                title: 'Resize PDF',
+                icon: 'fas fa-expand-alt',
+                description: 'Change the page size of your PDF document.',
+                formHTML: `${singleFileInput}
+                    <label class="form-label">New Page Size:</label>
+                    <select class="form-select" id="page-size">
+                        <option value="A4">A4</option>
+                        <option value="Letter">Letter</option>
+                        <option value="Legal">Legal</option>
+                        <option value="A3">A3</option>
+                        <option value="A5">A5</option>
+                    </select>
+                    ${outputFilenameInput('resized.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const resizeBytes = await file.arrayBuffer();
+                    const resizePdf = await PDFDocument.load(resizeBytes, { ignoreEncryption: true });
+                    const sizeValue = document.getElementById('page-size').value;
+                    const newSize = PageSizes[sizeValue];
+                    if (!newSize) throw new Error('Invalid page size selected.');
+                    resizePdf.getPages().forEach(page => page.setSize(newSize[0], newSize[1]));
+                    const resizedBytes = await resizePdf.save();
+                    saveAs(new Blob([resizedBytes], { type: 'application/pdf' }), app.getOutputFilename('resized.pdf'));
+                }
+            },
+            'n-up': {
+                title: 'N-Up Layout',
+                icon: 'fas fa-th-large',
+                description: 'Combine multiple PDF pages into one page.',
+                formHTML: `${singleFileInput}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="n-up-pages" class="form-label">Pages per Sheet:</label>
+                            <select class="form-select" id="n-up-pages">
+                                <option value="2">2</option>
+                                <option value="4">4</option>
+                                <option value="8">8</option>
+                                <option value="16">16</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="n-up-orientation" class="form-label">Sheet Orientation:</label>
+                            <select class="form-select" id="n-up-orientation">
+                                <option value="portrait">Portrait</option>
+                                <option value="landscape">Landscape</option>
+                            </select>
+                        </div>
+                    </div>
+                    ${outputFilenameInput('n-up.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const nupBytes = await file.arrayBuffer();
+                    const nupPdf = await PDFDocument.load(nupBytes, { ignoreEncryption: true });
+                    const n = parseInt(document.getElementById('n-up-pages').value);
+                    const orientation = document.getElementById('n-up-orientation').value;
+                    const newNupPdf = await PDFDocument.create();
+                    const originalPages = nupPdf.getPages();
+                    const layout = (orientation === 'portrait') ? { width: PageSizes.A4[0], height: PageSizes.A4[1] } : { width: PageSizes.A4[1], height: PageSizes.A4[0] };
+                    const pagesPerSheet = n === 2 ? {rows: 2, cols: 1} : n === 4 ? {rows: 2, cols: 2} : n === 8 ? {rows: 4, cols: 2} : {rows: 4, cols: 4};
+
+                    for (let i = 0; i < originalPages.length; i += n) {
+                        const newPage = newNupPdf.addPage([layout.width, layout.height]);
+                        const pageChunkIndices = originalPages.slice(i, i + n).map(p => nupPdf.getPages().indexOf(p));
+                        const embeddedPages = await newNupPdf.copyPages(nupPdf, pageChunkIndices);
+                        
+                        const cellWidth = layout.width / pagesPerSheet.cols;
+                        const cellHeight = layout.height / pagesPerSheet.rows;
+
+                        for (let j = 0; j < embeddedPages.length; j++) {
+                            const row = Math.floor(j / pagesPerSheet.cols);
+                            const col = j % pagesPerSheet.cols;
+                            const embeddedPage = embeddedPages[j];
+                            const scale = Math.min(cellWidth / embeddedPage.getWidth(), cellHeight / embeddedPage.getHeight()) * 0.95;
+                            const eWidth = embeddedPage.getWidth() * scale;
+                            const eHeight = embeddedPage.getHeight() * scale;
+                            const x = (col * cellWidth) + (cellWidth - eWidth) / 2;
+                            const y = layout.height - (row * cellHeight) - (cellHeight + eHeight) / 2;
+                            
+                            newPage.drawPage(embeddedPage, { x, y, width: eWidth, height: eHeight });
+                        }
+                    }
+                    const nupBytesSaved = await newNupPdf.save();
+                    saveAs(new Blob([nupBytesSaved], { type: 'application/pdf' }), app.getOutputFilename('n-up.pdf'));
+                }
+            },
+            'crop': {
+                title: 'Crop PDF',
+                icon: 'fas fa-crop-alt',
+                description: 'Trim the margins of your PDF pages.',
+                formHTML: `${singleFileInput}
+                    <p class="small">Enter values in points to remove from each side (1 inch = 72 points).</p>
+                    <div class="row g-3">
+                        <div class="col-sm-3"><label for="crop-top" class="form-label">Top:</label><input type="number" id="crop-top" class="form-control" value="0"></div>
+                        <div class="col-sm-3"><label for="crop-bottom" class="form-label">Bottom:</label><input type="number" id="crop-bottom" class="form-control" value="0"></div>
+                        <div class="col-sm-3"><label for="crop-left" class="form-label">Left:</label><input type="number" id="crop-left" class="form-control" value="0"></div>
+                        <div class="col-sm-3"><label for="crop-right" class="form-label">Right:</label><input type="number" id="crop-right" class="form-control" value="0"></div>
+                    </div>
+                    ${outputFilenameInput('cropped.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const cropBytes = await file.arrayBuffer();
+                    const cropPdf = await PDFDocument.load(cropBytes, { ignoreEncryption: true });
+                    const top = parseFloat(document.getElementById('crop-top').value) || 0;
+                    const bottom = parseFloat(document.getElementById('crop-bottom').value) || 0;
+                    const left = parseFloat(document.getElementById('crop-left').value) || 0;
+                    const right = parseFloat(document.getElementById('crop-right').value) || 0;
+
+                    cropPdf.getPages().forEach(page => {
+                        const { width, height } = page.getSize();
+                        page.setCropBox(left, bottom, width - left - right, height - bottom - top);
+                    });
+                    const croppedBytes = await cropPdf.save();
+                    saveAs(new Blob([croppedBytes], { type: 'application/pdf' }), app.getOutputFilename('cropped.pdf'));
+                }
+            },
+            'protect': {
+                title: 'Protect PDF',
+                icon: 'fas fa-lock',
+                description: 'Add a strong password to protect your PDF file.',
+                formHTML: `${singleFileInput}<div class="mb-3"><label for="password-input" class="form-label">Enter Password:</label><input type="password" class="form-control" id="password-input" required></div>${outputFilenameInput('protected.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const password = document.getElementById('password-input').value;
+                    const protectFileBytes = await file.arrayBuffer();
+                    const protectPdf = await PDFDocument.load(protectFileBytes, { ignoreEncryption: true });
+                    const protectedBytes = await protectPdf.save({ userPassword: password, ownerPassword: password });
+                    saveAs(new Blob([protectedBytes], { type: 'application/pdf' }), app.getOutputFilename('protected.pdf'));
+                }
+            },
+            'unlock': {
+                title: 'Unlock PDF',
+                icon: 'fas fa-unlock',
+                description: 'Remove a password from a PDF (if you know it).',
+                formHTML: `${singleFileInput}<div class="mb-3"><label for="password-input" class="form-label">Enter Current Password:</label><input type="password" class="form-control" id="password-input" required></div><div class="alert alert-warning small"><b>Note:</b> You must know the current password to remove it.</div>${outputFilenameInput('unlocked.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const password = document.getElementById('password-input').value;
+                    const unlockFileBytes = await file.arrayBuffer();
+                    const unlockPdf = await PDFDocument.load(unlockFileBytes, { password });
+                    const unlockedBytes = await unlockPdf.save();
+                    saveAs(new Blob([unlockedBytes], { type: 'application/pdf' }), app.getOutputFilename('unlocked.pdf'));
+                }
+            },
+            'repair': {
+                title: 'Repair PDF',
+                icon: 'fas fa-tools',
+                description: 'Attempt to fix basic structural issues in a PDF.',
+                formHTML: `${singleFileInput}<div class="alert alert-info small">This tool attempts a basic repair by rebuilding the PDF structure. It may not work for severely corrupted files.</div>${outputFilenameInput('repaired.pdf')}`,
+                async execute(app) {
+                    const file = document.getElementById('file-input').files[0];
+                    const repairBytes = await file.arrayBuffer();
+                    const pdfDoc = await PDFDocument.load(repairBytes, { ignoreEncryption: true, updateMetadata: false });
+                    const repairedBytes = await pdfDoc.save();
+                    saveAs(new Blob([repairedBytes], { type: 'application/pdf' }), app.getOutputFilename('repaired.pdf'));
+                }
+            }
+        };
+
+        class PDFToolApp {
+            constructor() {
+                this.modal = new bootstrap.Modal(document.getElementById('toolModal'));
+                this.dom = {
+                    mainContent: document.getElementById('tools'),
+                    modalBody: document.getElementById('toolModalBody'),
+                    modalLabel: document.getElementById('toolModalLabel'),
+                    runToolBtn: document.getElementById('run-tool-btn'),
+                    resetToolBtn: document.getElementById('reset-tool-btn'),
+                    themeSwitchBtn: document.getElementById('theme-switch-btn'),
+                    errorAlert: document.getElementById('modal-error-alert'),
+                    socialLinks: document.querySelectorAll('.social-icons a')
+                };
+                this.currentToolId = null;
+                this.organizeSortable = null;
+            }
+
+            init() {
+                this.buildToolCards();
+                this.setupEventListeners();
+                this.setupTheme();
+                this.setupSocialLinks();
+            }
+
+            setupEventListeners() {
+                this.dom.mainContent.addEventListener('click', (e) => {
+                    const card = e.target.closest('.tool-card');
+                    if (card && card.dataset.tool) {
+                        this.currentToolId = card.dataset.tool;
+                        const tool = this.getToolById(this.currentToolId);
+                        if (tool && !tool.isComingSoon) {
+                            this.setupModalForTool(this.currentToolId);
+                            this.modal.show();
+                        }
+                    }
+                });
+
+                this.dom.runToolBtn.addEventListener('click', () => this.handleRunTool());
+                this.dom.resetToolBtn.addEventListener('click', () => this.setupModalForTool(this.currentToolId));
+                this.dom.themeSwitchBtn.addEventListener('click', () => this.toggleTheme());
+            }
+            
+            setupSocialLinks() {
+                setTimeout(() => {
+                    const url = window.location.href;
+                    const text = "Check out this awesome free and private PDF toolkit!";
+                    this.dom.socialLinks.forEach(a => {
+                        const originalHref = a.getAttribute('data-original-href') || a.href;
+                        a.setAttribute('data-original-href', originalHref);
+                        if (originalHref.includes('facebook')) {
+                            a.href = `${originalHref}${encodeURIComponent(url)}`;
+                        } else {
+                            a.href = `${originalHref}text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                        }
+                    });
+                }, 500);
+            }
+
+            buildToolCards() {
+                const toolCategories = {
+                    'Edit & Sign': ['edit', 'page-numbers', 'watermark', 'header-footer', 'bates-numbering'],
+                    'Organize & Merge': ['merge', 'organize', 'split', 'rotate'],
+                    'Optimize & Convert': ['images-to-pdf', 'pdf-to-images', 'html-to-pdf', 'resize', 'n-up', 'crop'],
+                    'Secure & Unlock': ['protect', 'unlock', 'repair']
+                };
+
+                for (const [category, toolIds] of Object.entries(toolCategories)) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'tool-category';
+                    categoryDiv.innerHTML = `<h2 class="section-title">${category}</h2>`;
+                    const gridDiv = document.createElement('div');
+                    gridDiv.className = 'tool-grid';
+
+                    toolIds.forEach(toolId => {
+                        const tool = this.getToolById(toolId);
+                        const card = document.createElement('div');
+                        card.className = 'tool-card';
+                        card.dataset.tool = toolId;
+                        card.innerHTML = `
+                            <div class="icon"><i class="${tool.icon}"></i></div>
+                            <h3>${tool.title}</h3>
+                            <p>${tool.description}</p>
+                        `;
+                        if (tool.isComingSoon) card.style.opacity = '0.6';
+                        gridDiv.appendChild(card);
+                    });
+                    categoryDiv.appendChild(gridDiv);
+                    this.dom.mainContent.appendChild(categoryDiv);
+                }
+            }
+
+            setupModalForTool(toolId) {
+                const tool = this.getToolById(toolId);
+                if (!tool) return;
+
+                this.dom.modalLabel.textContent = tool.title;
+                this.dom.modalBody.innerHTML = `<form id="tool-form" onsubmit="return false;">${tool.formHTML}</form>`;
+                this.hideError();
+
+                if (tool.onModalReady) {
+                    tool.onModalReady(this);
+                }
+            }
+
+            async handleRunTool() {
+                const form = document.getElementById('tool-form');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                this.setLoadingState(true);
+                this.hideError();
+
+                try {
+                    const tool = this.getToolById(this.currentToolId);
+                    await tool.execute(this);
+                    this.modal.hide();
+                } catch (error) {
+                    console.error(`Error running tool ${this.currentToolId}:`, error);
+                    this.showError(error.message);
+                } finally {
+                    this.setLoadingState(false);
+                }
+            }
+
+            setLoadingState(isLoading) {
+                this.dom.runToolBtn.disabled = isLoading;
+                this.dom.runToolBtn.innerHTML = isLoading
+                    ? '<span class="spinner-border spinner-border-sm"></span> Processing...'
+                    : 'Run Tool';
+            }
+
+            showError(message) {
+                this.dom.errorAlert.textContent = message;
+                this.dom.errorAlert.style.display = 'block';
+            }
+
+            hideError() {
+                this.dom.errorAlert.style.display = 'none';
+            }
+
+            getOutputFilename(defaultName) {
+                return document.getElementById('output-filename')?.value || defaultName;
+            }
+
+            setupTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                this.dom.themeSwitchBtn.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            }
+
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                this.setupTheme();
+            }
+
+            getToolById(id) {
+                return ALL_TOOLS[id];
+            }
+
+            async renderPageOrganizer(file) {
+                if (!file) return;
+                const container = document.getElementById('page-organizer');
+                const containerWrapper = document.getElementById('page-organizer-container');
+                container.innerHTML = '<div class="d-flex justify-content-center align-items-center p-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                containerWrapper.classList.remove('d-none');
+
+                try {
+                    const fileBytes = await file.arrayBuffer();
+                    const pdfDoc = await pdfjsLib.getDocument({data: fileBytes}).promise;
+                    container.innerHTML = '';
+
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        const page = await pdfDoc.getPage(i);
+                        const viewport = page.getViewport({ scale: 0.4 });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                        const pageDiv = document.createElement('div');
+                        pageDiv.className = 'page-thumbnail';
+                        pageDiv.dataset.originalIndex = i - 1;
+                        pageDiv.dataset.id = i - 1;
+                        pageDiv.dataset.rotation = 0;
+
+                        pageDiv.innerHTML = `
+                            <div class="page-actions">
+                                <button class="rotate-btn" title="Rotate 90°"><i class="fas fa-sync-alt"></i></button>
+                                <button class="delete-btn" title="Delete Page"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                            <span class="page-number">${i}</span>
+                        `;
+                        pageDiv.prepend(canvas);
+                        container.appendChild(pageDiv);
+
+                        pageDiv.addEventListener('click', (e) => {
+                            if (!e.target.closest('button')) {
+                                pageDiv.classList.toggle('selected');
+                            }
+                        });
+                    }
+
+                    container.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => e.currentTarget.closest('.page-thumbnail').remove());
+                    });
+
+                    container.querySelectorAll('.rotate-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const thumb = e.currentTarget.closest('.page-thumbnail');
+                            const canvas = thumb.querySelector('canvas');
+                            let currentRotation = parseInt(thumb.dataset.rotation || '0', 10);
+                            currentRotation = (currentRotation + 90) % 360;
+                            thumb.dataset.rotation = currentRotation;
+                            canvas.style.transform = `rotate(${currentRotation}deg)`;
+                        });
+                    });
+
+                    document.getElementById('delete-selected-btn').addEventListener('click', () => {
+                        container.querySelectorAll('.page-thumbnail.selected').forEach(thumb => thumb.remove());
+                    });
+
+                    this.organizeSortable = new Sortable(container, {
+                        animation: 150,
+                        ghostClass: 'bg-info'
+                    });
+                } catch (error) {
+                    console.error('Error rendering page organizer:', error);
+                    this.showError(`Failed to load PDF preview: ${error.message}`);
+                    containerWrapper.classList.add('d-none');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new PDFToolApp().init();
+        });
+    </script>
+</body>
+</html>
